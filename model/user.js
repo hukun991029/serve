@@ -1,3 +1,4 @@
+const dayjs = require('dayjs')
 const mongoose = require('mongoose')
 const AddressSchema = new mongoose.Schema({
   province: 'string',
@@ -19,13 +20,15 @@ const userSchema = new mongoose.Schema({
   },
   updateTime: {
     type: Date,
-    default: Date.now()
+    default: dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
+    get: v => dayjs(v).format('YYYY-MM-DD HH:mm:ss'),
+    set: v => dayjs(v).format('YYYY-MM-DD HH:mm:ss')
   }
 })
 const User = mongoose.model('user', userSchema)
 
 // User.create({
-//   userName: 'admin',
+//   userName: '123',
 //   passWord: '12345678',
 //   address: {
 //     province: '湖北省',

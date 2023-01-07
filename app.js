@@ -1,15 +1,12 @@
 const Koa = require('koa')
 const app = new Koa()
-const router = require('koa-router')()
 const views = require('koa-views')
 const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
 const login = require('./routes/login')
-const cors = require('cors')
+const cors = require('koa2-cors')
 require('./model/connect.js')
 // error handler
 onerror(app)
@@ -20,9 +17,10 @@ app.use(
     enableTypes: ['json', 'form', 'text']
   })
 )
+app.use(cors())
 app.use(json())
 app.use(logger())
-app.use(cors())
+
 app.use(require('koa-static')(__dirname + '/public'))
 
 app.use(
@@ -30,7 +28,6 @@ app.use(
     extension: 'pug'
   })
 )
-
 // logger
 app.use(async (ctx, next) => {
   const start = new Date()
@@ -38,12 +35,14 @@ app.use(async (ctx, next) => {
   const ms = new Date() - start
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 })
-app.use(function (ctx) {
-  if (ctx.url.match(/^\/api\/login/)) {
-    next()
-    // ctx.body = 'protected\n'
-  }
-})
+
+// app.use(async (ctx, next) => {
+//   next()
+//   // const start = new Date()
+//   // await next()
+//   // const ms = new Date() - start
+//   // console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
+// })
 app.use(function (ctx, next) {
   return next().catch(err => {
     if (401 == err.status) {
@@ -54,11 +53,8 @@ app.use(function (ctx, next) {
     }
   })
 })
-router.prefix('/api')
 // routes
 app.use(login.routes(), login.allowedMethods())
-// app.use(users.routes(), users.allowedMethods())
-
 // error-handling
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
