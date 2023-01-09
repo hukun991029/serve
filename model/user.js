@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
     set: v => dayjs(v).format('YYYY-MM-DD HH:mm:ss')
   }
 })
+userSchema.set('toJSON', { getters: true })
 const User = mongoose.model('user', userSchema)
 
 // User.create({
