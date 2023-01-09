@@ -5,9 +5,11 @@ const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
-const login = require('./routes/login')
+const loginRouter = require('./routes/login')
+const userRouter = require('./routes/user')
 const cors = require('koa2-cors')
 require('./model/connect.js')
+const { setResponse } = require('./utils/util')
 // error handler
 onerror(app)
 
@@ -36,25 +38,30 @@ app.use(async (ctx, next) => {
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 })
 
-// app.use(async (ctx, next) => {
-//   next()
-//   // const start = new Date()
-//   // await next()
-//   // const ms = new Date() - start
-//   // console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
-// })
+app.use(async (ctx, next) => {
+  if (ctx.path === '/login') {
+    await next()
+  } else {
+    if (!ctx.header.authorization) {
+      ctx.body = setResponse([], 401)
+    } else {
+      await next()
+    }
+  }
+})
 app.use(function (ctx, next) {
   return next().catch(err => {
     if (401 == err.status) {
       ctx.status = 401
-      ctx.body = 'UnAuthorization'
+      ctx.body = setResponse([], 401)
     } else {
       throw err
     }
   })
 })
 // routes
-app.use(login.routes(), login.allowedMethods())
+app.use(loginRouter.routes(), loginRouter.allowedMethods())
+app.use(userRouter.routes(), userRouter.allowedMethods())
 // error-handling
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)

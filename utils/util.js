@@ -12,4 +12,6 @@ const setResponse = (data, code = 200) => {
     msg: defaultMessage[code]
   }
 }
-module.exports = setResponse
+module.exports = {
+  setResponse
+}

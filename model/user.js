@@ -1,18 +1,20 @@
 const dayjs = require('dayjs')
 const mongoose = require('mongoose')
+const bcrypt = require('bcryptjs')
 const AddressSchema = new mongoose.Schema({
   province: String,
   city: String,
   area: String
 })
 const userSchema = new mongoose.Schema({
-  userName: String,
-  passWord: {
+  username: String,
+  password: {
     type: String,
     max: 16,
-    min: 8
+    min: 8,
+    set: v => bcrypt.hashSync(v, bcrypt.genSaltSync(10))
   },
-  user_id: Number,
+  userId: Number,
   phone: String | Number,
   address: AddressSchema,
   createTime: {
@@ -29,8 +31,8 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('user', userSchema)
 
 // User.create({
-//   userName: '123',
-//   passWord: '12345678',
+//   username: 'admin',
+//   password: '12345678',
 //   address: {
 //     province: '湖北省',
 //     city: '黄冈市',

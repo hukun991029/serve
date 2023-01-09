@@ -9,3 +9,4 @@ mongoose
     console.log('链接失败', err)
   })
 require('./user')
+require('./userCount')

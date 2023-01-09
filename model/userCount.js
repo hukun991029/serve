@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 const countSchema = new mongoose.Schema({
-  user_id: Number,
+  userId: Number,
   count: {
-    Number,
+    type: Number,
     default: 10000001
   }
 })
