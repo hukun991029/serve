@@ -1,18 +1,19 @@
 const dayjs = require('dayjs')
 const mongoose = require('mongoose')
 const AddressSchema = new mongoose.Schema({
-  province: 'string',
-  city: 'string',
-  area: 'string'
+  province: String,
+  city: String,
+  area: String
 })
 const userSchema = new mongoose.Schema({
-  userName: 'string',
+  userName: String,
   passWord: {
-    type: 'string',
+    type: String,
     max: 16,
     min: 8
   },
-  phone: 'string',
+  user_id: Number,
+  phone: String | Number,
   address: AddressSchema,
   createTime: {
     type: Date,

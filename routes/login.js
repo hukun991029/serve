@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../model/user')
 const bcrypt = require('bcryptjs')
 const setResponse = require('../utils/response.js')
-router.get('/login', async ctx => {
+router.post('/login', async ctx => {
   const { userName, passWord } = ctx.request.query
   const user = await User.findOne({ userName }, { passWord: 0 })
   if (!user) {
