@@ -8,7 +8,7 @@ router.get('/list', async ctx => {
   const user = await User.find({
     $and: [
       { username: { $regex: username } },
-      { $or: [userId ? { userId: { $regex: userId } } : {}] },
+      { $or: [userId ? { $regex: String(userId) } : {}] },
       {
         $or: [
           startTime || endTime
