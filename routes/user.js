@@ -32,7 +32,7 @@ router.get('/list', async ctx => {
     {
       $facet: {
         total: [{ $count: 'count' }],
-        data: [
+        rows: [
           {
             $skip: (pageNum - 1) * 10
           },
@@ -42,13 +42,12 @@ router.get('/list', async ctx => {
     },
     {
       $project: {
-        data: '$data',
-        total: { $arrayElemAt: ['$total.count', 0] }
+        rows: { rows: '$rows', total: { $arrayElemAt: ['$total.count', 0] } }
       }
     }
   ])
   console.log(res)
-  ctx.body = Object.assign(setResponse(res[0].data), {
+  ctx.body = Object.assign(setResponse(res[0].rows[0]), {
     total: res[0].total
   })
 })
@@ -84,8 +83,17 @@ router.post('/add', async ctx => {
 
 router.post('/update', async ctx => {
   const params = ctx.request.body
-  console.log(params)
-  await User.findOneAndUpdate({ userName: params.userName }, { ...params })
+  const updateTime = new Date()
+  await User.findOneAndUpdate(
+    { userName: params.userName },
+    { ...params, updateTime }
+  )
+  ctx.body = setResponse([], 200)
+})
+
+router.get('/del', async ctx => {
+  const { username } = ctx.request.query
+  await User.findOneAndDelete({ username })
   ctx.body = setResponse([], 200)
 })
 module.exports = router
