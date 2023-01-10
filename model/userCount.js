@@ -1,10 +1,8 @@
 const mongoose = require('mongoose')
 const countSchema = new mongoose.Schema({
-  userId: Number,
-  count: {
-    type: Number,
-    default: 10000001
-  }
+  _id: String,
+  count: Number
 })
 const UserCount = mongoose.model('user_count', countSchema)
+// UserCount.create({ _id: 'userId', count: 10000001 })
 module.exports = UserCount

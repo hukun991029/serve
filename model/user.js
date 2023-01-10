@@ -1,11 +1,6 @@
 const dayjs = require('dayjs')
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
-const AddressSchema = new mongoose.Schema({
-  province: String,
-  city: String,
-  area: String
-})
 const userSchema = new mongoose.Schema({
   username: String,
   password: {
@@ -16,7 +11,14 @@ const userSchema = new mongoose.Schema({
   },
   userId: Number,
   phone: String | Number,
-  address: AddressSchema,
+  email: String,
+  address: {
+    type: {
+      province: String,
+      city: String,
+      area: String
+    }
+  },
   createTime: {
     type: Date,
     default: Date.now()
@@ -30,14 +32,4 @@ const userSchema = new mongoose.Schema({
 })
 userSchema.set('toJSON', { getters: true })
 const User = mongoose.model('user', userSchema)
-
-// User.create({
-//   username: 'admin',
-//   password: '12345678',
-//   address: {
-//     province: '湖北省',
-//     city: '黄冈市',
-//     area: '黄梅县'
-//   }
-// })
 module.exports = User
