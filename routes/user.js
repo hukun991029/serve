@@ -7,10 +7,18 @@ router.prefix('/user')
 router.get('/list', async ctx => {
   const { username, userId, startTime, endTime, pageSize, pageNum } =
     ctx.request.query
-  const query = {
+  const sql = {
     $and: [
       { username: { $regex: username } },
-      { $or: [userId ? { $regex: String(userId) } : {}] },
+      {
+        $or: [
+          userId
+            ? {
+                userId: Number(userId)
+              }
+            : {}
+        ]
+      },
       {
         $or: [
           startTime || endTime
@@ -27,7 +35,7 @@ router.get('/list', async ctx => {
   }
   const res = await User.aggregate([
     {
-      $match: query
+      $match: sql
     },
     {
       $facet: {
@@ -42,15 +50,11 @@ router.get('/list', async ctx => {
     },
     {
       $project: {
-        data: '$data',
-        total: { $arrayElemAt: ['$total.count', 0] }
+        data: { rows: '$data', total: { $arrayElemAt: ['$total.count', 0] } }
       }
     }
   ])
-  console.log(res)
-  ctx.body = Object.assign(setResponse(res[0].data), {
-    total: res[0].total
-  })
+  ctx.body = setResponse(res[0].data[0] || [])
 })
 
 router.post('/add', async ctx => {
@@ -85,7 +89,13 @@ router.post('/add', async ctx => {
 router.post('/update', async ctx => {
   const params = ctx.request.body
   console.log(params)
-  await User.findOneAndUpdate({ userName: params.userName }, { ...params })
+  await User.findOneAndUpdate({ username: params.username }, { ...params })
+  ctx.body = setResponse([], 200)
+})
+
+router.get('/del', async ctx => {
+  const { userId } = ctx.request.query
+  await User.findOneAndDelete({ userId })
   ctx.body = setResponse([], 200)
 })
 module.exports = router

@@ -10,3 +10,4 @@ mongoose
   })
 require('./user')
 require('./userCount')
+require('./dept')
