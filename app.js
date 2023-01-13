@@ -7,6 +7,7 @@ const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const loginRouter = require('./routes/login')
 const userRouter = require('./routes/user')
+const deptRouter = require('./routes/dept')
 const cors = require('koa2-cors')
 require('./model/connect.js')
 const { setResponse } = require('./utils/util')
@@ -62,6 +63,8 @@ app.use(function (ctx, next) {
 // routes
 app.use(loginRouter.routes(), loginRouter.allowedMethods())
 app.use(userRouter.routes(), userRouter.allowedMethods())
+app.use(deptRouter.routes(), userRouter.allowedMethods())
+
 // error-handling
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)

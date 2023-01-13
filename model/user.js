@@ -1,4 +1,3 @@
-const dayjs = require('dayjs')
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const userSchema = new mongoose.Schema({
@@ -25,11 +24,10 @@ const userSchema = new mongoose.Schema({
   },
   updateTime: {
     type: Date,
-    default: dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
-    get: v => dayjs(v).format('YYYY-MM-DD HH:mm:ss'),
-    set: v => dayjs(v).format('YYYY-MM-DD HH:mm:ss')
-  }
+    default: Date.now()
+  },
+  isDelete: { type: Number, default: 0 }
 })
-userSchema.set('toJSON', { getters: true })
 const User = mongoose.model('user', userSchema)
+
 module.exports = User
