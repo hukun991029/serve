@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
   },
   isDelete: { type: Number, default: 0 }
 })
+userSchema.add({
+  deptId: { type: mongoose.Types.ObjectId, default: '', ref: 'dept' },
+  deptList: { type: Array, default: [mongoose.Types.ObjectId] }
+})
 const User = mongoose.model('user', userSchema)
 
 module.exports = User

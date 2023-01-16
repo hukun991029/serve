@@ -1,7 +1,8 @@
 const router = require('koa-router')()
 const User = require('../model/user')
 const Count = require('../model/userCount')
-const { setResponse } = require('../utils/util')
+const { setResponse, getTreeList } = require('../utils/util')
+const Dept = require('../model/dept')
 router.prefix('/user')
 
 router.get('/list', async ctx => {
@@ -9,23 +10,55 @@ router.get('/list', async ctx => {
   const sql = {
     isDelete: 0
   }
-  if (startTime || endTime) {
-    sql['createTime'] = { $gte: new Date(startTime), $lte: new Date(endTime) }
-  }
   if (username) {
     sql['username'] = { $regex: username }
   }
   if (userId) {
     sql['userId'] = { userId: Number(userId) }
   }
-  const result = await User.find(sql)
-    .skip((pageNum - 1) * 10)
+  if (startTime || endTime) {
+    sql['createTime'] = { $gte: new Date(startTime), $lte: new Date(endTime) }
+  }
+  // const res = await User.find(sql)
+  //   .skip((pageNum - 1) * pageSize)
+  //   .limit(Number(pageSize))
+  ;[
+    {
+      $match: sql
+    },
+    {
+      $skip: (pageNum - 1) * pageSize
+    },
+    {
+      $limit: Number(pageSize)
+    },
+    {}
+  ]
+  const res = await User.aggregate()
+    .match(sql)
+    .skip((pageNum - 1) * pageSize)
     .limit(Number(pageSize))
-  ctx.body = setResponse({ rows: result, total: result.length })
+    .lookup({
+      from: 'depts',
+      localField: 'deptId',
+      foreignField: '_id',
+      as: 'deptInfo'
+    })
+    .addFields({
+      deptName: { $arrayElemAt: ['$deptInfo.deptName', 0] }
+    })
+  // .facet({
+  // deptName: Dept.findOne({ deptId: this.deptId }),
+  //   total: [{ $count: 'total' }]
+  // })
+
+  console.log(res)
+  ctx.body = setResponse({ rows: res, total: res.length })
 })
 
 router.post('/add', async ctx => {
   const params = ctx.request.body
+  params.deptId = params.deptList[params.deptList.length - 1]
   const docs = await User.findOne({
     $or: [{ username: params.username }, { email: params.email }]
   })
@@ -39,7 +72,6 @@ router.post('/add', async ctx => {
         new: true
       }
     )
-
     await User.create({
       userId: counrDocs.count,
       ...params
@@ -50,6 +82,7 @@ router.post('/add', async ctx => {
 
 router.post('/update', async ctx => {
   const params = ctx.request.body
+  params.deptId = params.deptList[params.deptList.length - 1]
   await User.findOneAndUpdate({ username: params.username }, { ...params })
   ctx.body = setResponse([], 200)
 })
@@ -59,4 +92,5 @@ router.get('/del', async ctx => {
   await User.findOneAndUpdate({ userId }, { isDelete: 1 })
   ctx.body = setResponse([], 200)
 })
+
 module.exports = router

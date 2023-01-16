@@ -7,6 +7,7 @@ const DeptSchema = new mongoose.Schema({
   parentId: {
     type: [mongoose.Types.ObjectId]
   },
+  phone: Number,
   createTime: {
     type: Date,
     default: Date.now()

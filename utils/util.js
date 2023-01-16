@@ -12,14 +12,30 @@ const setResponse = (data, code = 200, message) => {
     msg: message || defaultMessage[code]
   }
 }
-const find = (model, query, option, callback) => {
-  const res = model.find(query)
-  for (const key in option) {
-    res[key](option[key])
-  }
-  res.exec(callback)
+
+const getTreeList = async (list, id = [], target = []) => {
+  list.forEach(item => {
+    if (item.parentId?.length) {
+      const parentId = item.parentId[item.parentId.length - 1]
+      if (String(parentId) === String(id)) {
+        target.push(item._doc)
+      }
+    } else {
+      if (String(item.parentId) === String(id)) {
+        target.push(item._doc)
+      }
+    }
+  })
+  target.forEach(item => {
+    item.children = item.children || []
+    getTreeList(list, item._id, item.children)
+    if (!item.children.length) {
+      delete item.children
+    }
+  })
+  return target
 }
 module.exports = {
   setResponse,
-  find
+  getTreeList
 }
