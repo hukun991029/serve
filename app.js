@@ -8,6 +8,7 @@ const logger = require('koa-logger')
 const loginRouter = require('./routes/login')
 const userRouter = require('./routes/user')
 const deptRouter = require('./routes/dept')
+const roleRouter = require('./routes/role')
 const cors = require('koa2-cors')
 require('./model/connect.js')
 const { setResponse } = require('./utils/util')
@@ -63,7 +64,8 @@ app.use(function (ctx, next) {
 // routes
 app.use(loginRouter.routes(), loginRouter.allowedMethods())
 app.use(userRouter.routes(), userRouter.allowedMethods())
-app.use(deptRouter.routes(), userRouter.allowedMethods())
+app.use(deptRouter.routes(), deptRouter.allowedMethods())
+app.use(roleRouter.routes(), roleRouter.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {
