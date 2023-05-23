@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema({
   isDelete: { type: Number, default: 0 }
 })
 userSchema.add({
+  avatarUrl: { type: String, default: '' },
   deptId: { type: mongoose.Types.ObjectId, default: '', ref: 'dept' },
   deptList: { type: Array, default: [mongoose.Types.ObjectId] }
 })
