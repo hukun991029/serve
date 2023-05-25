@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const RoleSchema = new mongoose.Schema({
   roleName: String,
   remark: String,
@@ -15,9 +15,9 @@ const RoleSchema = new mongoose.Schema({
     default: Date.now()
   },
   isDelete: {
-    type: Boolean,
-    default: false
+    type: Number,
+    default: 0
   }
-})
-const Role = mongoose.model('role', RoleSchema)
-module.exports = Role
+});
+const Role = mongoose.model('role', RoleSchema);
+module.exports = Role;

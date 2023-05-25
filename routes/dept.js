@@ -15,14 +15,12 @@ router.get('/list', async ctx => {
   });
 });
 router.get('/getAllUser', async ctx => {
-  const res = await User.find({}, { username: 1, userId: 1, _id: 0 });
+  const res = await User.find({ isDelete: 0 }, { username: 1, userId: 1, _id: 0 });
   ctx.body = setResponse(res);
 });
 router.post('/add', async ctx => {
   const { userId, parentId, deptName } = ctx.request.body;
-  console.log(userId);
   const { email, username, phone } = await User.findOne({ userId });
-
   Dept.create({
     userId,
     username,

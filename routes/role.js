@@ -16,6 +16,13 @@ router.post('/operate', async ctx => {
     });
     ctx.body = setResponse([]);
   } else if (action === 'edit') {
+    const { roleName, remark, id } = ctx.request.body;
+    if (!id) {
+      ctx.body = setResponse([], 400);
+      return;
+    }
+    await Role.findOneAndUpdate({ _id: id }, { roleName, remark });
+    ctx.body = setResponse([]);
   } else {
     const { id } = ctx.request.body;
     await Role.findByIdAndUpdate({ _id: id }, { isDelete: 1 });
@@ -25,7 +32,14 @@ router.post('/operate', async ctx => {
 
 router.get('/list', async ctx => {
   const { roleName } = ctx.request.query;
-  const res = await Role.find({ roleName: { $regex: roleName, $options: 'i' }, isDelete: 0 });
-  ctx.body = setResponse(res);
+  let params = { isDelete: 0 };
+  if (roleName) {
+    params = { ...params, roleName: { $regex: roleName, $options: 'i' } };
+  }
+  const res = await Role.find(params);
+  ctx.body = setResponse({
+    row: res,
+    total: res.length
+  });
 });
 module.exports = router;
