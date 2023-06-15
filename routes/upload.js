@@ -1,38 +1,32 @@
-const router = require('koa-router')();
-const fs = require('fs');
-const path = require('path');
-const { setResponse } = require('../utils/util');
-const mime = require('mime');
-const User = require('../model/user');
-const { koaBody } = require('koa-body');
-router.get('/upload/:id', ctx => {
-  console.log(ctx.params.id);
-  const { path: filePath } = ctx.query;
-  const type = mime.getType(filePath);
-  const file = fs.readFileSync(path.join(__dirname, `../upload/${filePath}`));
-  ctx.set('content-type', type);
-  ctx.body = file;
-});
-
+const router = require('koa-router')()
+const User = require('../model/user')
+const path = require('path')
+const fs = require('fs')
+const { setResponse } = require('../utils/util')
+const { koaBody } = require('koa-body')
+router.prefix('/upload')
 router.post(
-  '/upload/image',
+  '/avatar/:userId',
   koaBody({
-    multipart: true,
-    encoding: 'gzip',
+    multipart: true, //解析多个文件
     formidable: {
-      uploadDir: path.join(__dirname, '../upload'),
-      maxFileSize: 200 * 1024 * 1024, // 设置上传文件大小最大限制，默认2M
-      keepExtensions: true, // 保留文件扩展名
-      onFileBegin: (name, file) => {
-        name = file.originalFilename;
-      }
+      maxFileSize: 10 * 1024 * 1024, // 设置上传文件大小最大限制，默认2M
+      keepExtensions: true
     }
   }),
   async ctx => {
-    const file = ctx.request.files.avatar;
-    const filePath = ctx.origin + '' + file.path.replace('public', '');
-    await User.findOneAndUpdate({ _id: ctx.state.id }, { avatar: filePath });
-    ctx.body = setResponse({ path: filePath }, 200);
+    const { userId } = ctx.params
+    const file = ctx.request.files.file
+    const newFileName = userId + '_' + file.originalFilename
+    const filePath = path.join(__dirname, '../public/uploads/') + newFileName
+    await fs.copyFileSync(file.filepath, filePath)
+    await User.findOneAndUpdate({ userId }, { avatarUrl: `http://localhost:3000/uploads/${newFileName}` })
+    ctx.body = setResponse(
+      {
+        src: `http://localhost:3000/uploads/${newFileName}`
+      },
+      200
+    )
   }
-);
-module.exports = router;
+)
+module.exports = router

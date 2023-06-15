@@ -1,6 +1,5 @@
-const mongoose = require('./connect');
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const path = require('path');
 const userSchema = new mongoose.Schema({
   username: String,
   password: {
@@ -30,16 +29,10 @@ const userSchema = new mongoose.Schema({
   isDelete: { type: Number, default: 0 }
 });
 userSchema.add({
+  avatarUrl: { type: String, default: '' },
   deptId: { type: mongoose.Types.ObjectId, default: '', ref: 'dept' },
-  deptList: { type: Array, default: [mongoose.Types.ObjectId] },
-  avatar: { type: String, default: path.join(__dirname, '../upload/favicon.ico') }
+  deptList: { type: Array, default: [mongoose.Types.ObjectId] }
 });
 const User = mongoose.model('user', userSchema);
 
-// User.create({
-//   username: 'admin',
-//   password: '123456',
-//   deptId: '640c8d260e5ba1c29d1717c8',
-//   userId: '1000001'
-// });
 module.exports = User;
