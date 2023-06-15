@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('./connect')
 const DeptSchema = new mongoose.Schema({
   deptName: String, // 部门名称
   username: String, // 负责人名称
@@ -19,4 +19,9 @@ const DeptSchema = new mongoose.Schema({
   isDelete: { type: Number, default: 0 }
 })
 const Dept = mongoose.model('dept', DeptSchema)
+// Dept.create({
+//   deptName:'技术部',
+//   username:'张三',
+//   userId:'10000001'
+// })
 module.exports = Dept

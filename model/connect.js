@@ -8,7 +8,8 @@ mongoose
   .catch(err => {
     console.log('链接失败', err)
   })
-require('./user')
-require('./userCount')
-require('./dept')
-require('./role')
+  module.exports=mongoose
+// require('./user')
+// require('./userCount')
+// require('./dept')
+// require('./role')

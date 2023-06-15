@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('./connect')
 const countSchema = new mongoose.Schema({
   _id: String,
   count: Number

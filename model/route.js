@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('./connect')
 const routeSchema = new mongoose.Schema({
   name: String,
   path: String,

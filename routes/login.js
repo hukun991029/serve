@@ -11,7 +11,7 @@ router.post('/login', async ctx => {
   } else {
     const isValid = bcrypt.compareSync(password, user.password)
     if (isValid) {
-      const token = jwt.sign({ username: user.username }, 'secret', {
+      const token = jwt.sign({ id: user._id }, 'secret', {
         expiresIn: '7d'
       })
       ctx.body = setResponse(
